@@ -26,6 +26,8 @@ jobs:
 
       - run: npm install
       - run: npm run build
+      
+      - run: echo "game-of-life.joshlucpoll.dev" > public/CNAME
 
       - name: Deploy
         uses: s0/git-publish-subdir-action@develop
