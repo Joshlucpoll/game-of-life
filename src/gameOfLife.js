@@ -1,4 +1,4 @@
-class GameOfLife {
+export default class GameOfLife {
   constructor() {
     this.points = [];
   }
@@ -50,19 +50,15 @@ class GameOfLife {
     }
     this.points = newPoints;
   }
-}
 
-board = new GameOfLife();
-
-board.points = [
-  [0, 0],
-  [0, 1],
-  [0, -1],
-  [1, 0],
-  [2, 1],
-];
-
-for (let i = 0; i < 1000; i++) {
-  board.nextTurn();
-  console.log(board.points);
+  switchCell(cellX, cellY, alive) {
+    if (alive) {
+      let index = this.points
+        .map(([x, y]) => x == cellX && y == cellY)
+        .indexOf(true);
+      if (index != -1) this.points.splice(index, 1);
+    } else {
+      this.points.push([cellX, cellY]);
+    }
+  }
 }
