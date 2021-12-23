@@ -1,9 +1,10 @@
 class GameOfLife {
   constructor() {
-    this.points = {};
+    this.points = [];
   }
 
-  equals = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  isAlive = (point) =>
+    this.points.map(([x, y]) => x == point[0] && y == point[1]).includes(true);
 
   getNeighbours(point) {
     let neighbours = [];
@@ -22,44 +23,32 @@ class GameOfLife {
     const neighbours = this.getNeighbours(point);
 
     let neighboursAlive = 0;
-    const xPoints = this.points.keys();
-    for (const neighbour of neighbours) {
-      // console.log(this.points.map((p) => this.equals(p, neighbour)));
-      if (xPoints.includes(neighbour[0]))
-        if (
-          this.points
-            .filter(x, (y) => x == neighbour[0])
-            .values()
-            .includes(neighbour[1])
-        )
-          neighboursAlive++;
-    }
+    for (const neighbour of neighbours)
+      if (this.isAlive(neighbour)) neighboursAlive++;
+
+    if (!this.isAlive(point)) return neighboursAlive == 3;
 
     if (neighboursAlive == 2 || neighboursAlive == 3) return true;
     return false;
   }
 
   nextTurn() {
-    let xPoints = this.points.map((x, y) => x);
-    let yPoints = this.points.map((x, y) => y);
+    let newPoints = [];
+    let pointsToCheck = [];
 
-    let topLeftPoint = [Math.min(...xPoints) - 1, Math.max(...yPoints) + 1];
-    let bottomRightPoint = [Math.max(...xPoints) + 1, Math.min(...yPoints) - 1];
+    for (const point of this.points)
+      for (const neighbour of this.getNeighbours(point))
+        if (
+          !pointsToCheck
+            .map(([x, y]) => x == neighbour[0] && y == neighbour[1])
+            .includes(true)
+        )
+          pointsToCheck.push(neighbour);
 
-    for (let y = topLeftPoint[1]; y >= bottomRightPoint[1]; y--) {
-      for (let x = topLeftPoint[0]; x <= bottomRightPoint[0]; x++) {
-        let pointAlive = this.checkPoint([x, y]);
-
-        if (pointAlive) {
-          this.points[x];
-        } else if (this.points.includes([x, y])) {
-          i = this.points.indexOf([x, y]);
-          this.points.splice(index, 1);
-        }
-
-        this.points = [...new Set(this.points)];
-      }
+    for (const point of pointsToCheck) {
+      if (this.checkPoint(point)) newPoints.push(point);
     }
+    this.points = newPoints;
   }
 }
 
@@ -69,10 +58,11 @@ board.points = [
   [0, 0],
   [0, 1],
   [0, -1],
+  [1, 0],
+  [2, 1],
 ];
 
-for (let i = 0; i < 20; i++) {
+for (let i = 0; i < 1000; i++) {
   board.nextTurn();
-  // console.log(board.points);
-  console.log(i);
+  console.log(board.points);
 }
